@@ -1,0 +1,16 @@
+.word	$4000
+.org	$4000
+
+; predictable entry points for SID header
+sid_init:
+	jmp	sqx_init
+sid_tick:
+	jmp	sqx_tick
+
+
+.macro bcolor
+; no display in sidplay
+.macend
+
+.include "sqx.oph"
+

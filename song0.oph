@@ -1,0 +1,183 @@
+
+sqx_songs:
+.word t0, t1, t2, tnone
+.word tnone, t1, t2, tnone
+.word tnone, tnone, t2, tnone
+
+
+t0:
+.byte 1,1,2,2,2,2,1,1,$ff
+
+t1:
+;.byte 2,2,2,2,$ff
+.byte 3,3,3,3,3,3,3,3
+.byte 4,4,4,4,4,4,4,4
+.byte 5,5,5,5,5,5,5,5
+.byte 6,6,6,6,6,6,6,6
+.byte $ff
+
+t2:
+;.byte 2,2,2,2,$ff
+.byte 7,7,7,7
+.byte 8,8,8,8
+.byte 8,8,8,8
+.byte 7,7,7,7
+.byte $ff
+
+tnone:
+;.byte 2,2,2,2,$ff
+.byte 0,$ff
+
+sqx_patterns_lo:
+.byte <silence, <seq0, <seq1, <seq2, <seq3, <seq4, <seq5, <seq6, <seq7
+sqx_patterns_hi:
+.byte >silence, >seq0, >seq1, >seq2, >seq3, >seq4, >seq5, >seq6, >seq7
+
+seq0:
+.byte 1,40,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,40,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,40,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,40,0,2
+.byte 1,43,0,2
+.byte $ff
+
+seq1:
+.byte 1,38,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,38,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,38,0,2
+.byte 1,47,0,1
+.byte 1,47,0,1
+.byte 1,38,0,2
+.byte 1,43,0,2
+.byte $ff
+
+seq2:
+.byte 1,16,0,2
+.byte 1,28,0,2
+.byte $ff
+
+seq3:
+.byte 1,19,0,2
+.byte 1,31,0,2
+.byte $ff
+
+seq4:
+.byte 1,26,0,2
+.byte 1,38,0,2
+.byte $ff
+
+seq5:
+.byte 1,24,0,2
+.byte 1,40,0,2
+.byte $ff
+
+seq6:
+.byte 1,67,0,1
+.byte 1,59,0,1
+.byte 1,64,0,1
+.byte 1,59,0,1
+
+.byte 1,66,0,1
+.byte 1,59,0,1
+.byte 1,64,0,1
+.byte 1,59,0,1
+.byte $ff
+
+seq7:
+.byte 1,67,0,1
+.byte 1,59,0,1
+.byte 1,62,0,1
+.byte 1,59,0,1
+
+.byte 1,64,0,1
+.byte 1,59,0,1
+.byte 1,62,0,1
+.byte 1,59,0,1
+.byte $ff
+
+silence:
+.byte 0,16
+.byte $ff
+
+
+sqx_commands_lo:
+.byte <wait16ths, <play
+sqx_commands_hi:
+.byte >wait16ths, >play
+
+
+tmp: .byte 0
+voi: .byte 0,7,14
+inst:	.byte $20,$50,$10
+
+play:
+	jsr	inc_pattern
+
+	txa
+	lsr
+	sta	tmp
+	tay
+	lda	(zp_pptr,x)
+	ldx	voi,y
+	tay
+
+	lda	#$51
+	sta	$d402,x
+
+	lda	#%00100000
+	sta	$d404,x
+
+	lda	freqlo,y
+	sta	$d400,x
+	lda	freqhi,y
+	sta	$d401,x
+
+	; attack, decay
+	lda	#$09
+	sta	$d405,x
+
+	; sustain, release
+	lda	#$19
+	sta	$d406,x
+
+	; noteon
+	ldy	tmp
+	lda	inst,y
+	ora	#1
+	;lda	#%00100001
+	sta	$d404,x
+
+	rts
+
+stop:
+	txa
+	lsr
+	tay
+	ldx	voi,y
+	lda	#%00100000
+	sta	$d404,x
+	rts
+
+wait16ths: ; xxx no overflow handling
+	jsr	inc_pattern
+	lda	(zp_pptr,x)
+
+	asl
+	sta	tmp
+	asl
+	clc
+	adc	tmp
+	sta	sqx_twait,x
+	rts
+
+

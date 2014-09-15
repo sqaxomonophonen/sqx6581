@@ -1,0 +1,198 @@
+; sqx player
+
+.scope
+
+; public state
+sqx_twait:    .word 0,0,0,0
+
+; hawking $e0-$ef for track/pattern pointers. nom nom.
+; (normal life for $e0-$ef is screen memory ptrs.. used only by BASIC I guess)
+.alias	zp_tptr	$e0	; track pointers
+.alias	zp_pptr	$e8	; pattern pointers
+
+; private state
+_v_tmp:       .word 0
+_v_song:      .byte 0
+
+; "constants"
+;_C_voffset:   .byte 0,7,14,255
+.include "freq.oph"
+
+
+inc_pattern: ; X: track 0-3 * 2 (preserves X)
+	lda	zp_pptr,x
+	clc
+	adc	#1
+	sta	zp_pptr,x
+	bcc	+
+	inc	zp_pptr+1,x
+*
+	rts
+
+_reset_pattern: ; X: track 0-3 * 2 (preserves X)
+	; Y = *(tptr[x])
+	lda	(zp_tptr,x)
+	tay
+
+	lda	sqx_patterns_lo,y
+	sta	zp_pptr,x
+	lda	sqx_patterns_hi,y
+	sta	zp_pptr+1,x
+
+	rts
+
+
+_reset_track: ; X: track 0-3 * 2 (preserves X)
+	; sqx_twait[y] = 0
+	lda	#0
+	sta	sqx_twait,x
+	sta	sqx_twait+1,x
+
+	; Y = _v_song * 8 + X
+	lda	_v_song
+	asl
+	asl
+	asl
+	stx	_v_tmp
+	clc
+	adc	_v_tmp
+	tay
+
+	; write zp_tptr[y]
+	lda	sqx_songs, y
+	sta	zp_tptr, x
+	lda	sqx_songs+1, y
+	sta	zp_tptr+1, x
+
+	jsr	_reset_pattern
+
+	rts
+
+
+sqx_init: ; A = song number
+	; _v_song = A
+	sta	_v_song
+
+	; reset tracks 0-3
+	ldx	#0
+	jsr	_reset_track
+	ldx	#2
+	jsr	_reset_track
+	ldx	#4
+	jsr	_reset_track
+	ldx	#6
+	jsr	_reset_track
+
+	; no filter, no resonance
+	lda	#$00
+	sta	$d417
+
+	; full volume, no filter
+	lda	#$0f
+	sta	$d418
+
+	; shut up
+	lda	#$00
+	sta	$d404
+	sta	$d40b
+	sta	$d412
+
+	rts
+
+
+
+_advtrack: ; _v_tmp: track 0-3 * 2
+.scope
+	; X = _v_tmp
+	lda	_v_tmp
+	tax
+
+_advtrack_have_x:
+	; if twait != 0 then _decrement_twait
+	lda	sqx_twait+1,x
+	bne	_decrement_twait
+	lda	sqx_twait,x
+	bne	_decrement_twait
+
+	; read next command
+	lda	(zp_pptr,x)
+	; if not end of pattern then _exec_cmd
+	cmp	#$ff
+	bne	_exec_cmd
+
+	; increment track ptr
+	lda	zp_tptr,x
+	clc
+	adc	#1
+	sta	zp_tptr,x
+	bcc	+
+	inc	zp_tptr+1,x
+*
+
+	; if not end of track then _reset_ptn (else reset track)
+	lda	(zp_tptr,x)
+	cmp	#$ff
+	bne	_reset_ptn
+
+	jsr	_reset_track
+	jmp	_advtrack_have_x
+
+_reset_ptn:
+	jsr	_reset_pattern
+	jmp	_advtrack_have_x
+
+
+_exec_cmd:
+	tay
+	lda	sqx_commands_lo,y
+	sta	_MOD_jsr+1
+	lda	sqx_commands_hi,y
+	sta	_MOD_jsr+2
+_MOD_jsr:
+	jsr	$0000
+
+	; increment pattern ptr
+	lda	_v_tmp
+	tax
+	jsr	inc_pattern
+
+	jmp	_advtrack_have_x
+
+_decrement_twait:
+	lda	sqx_twait,x
+	sec
+	sbc	#1
+	sta	sqx_twait,x
+	bcs	+
+	dec	sqx_twait+1,x
+*	rts
+.scend
+
+
+
+sqx_tick:
+	`bcolor	14
+	lda	#[3*2]
+	sta	_v_tmp
+	jsr	_advtrack
+
+	`bcolor	2
+	lda	#[0*2]
+	sta	_v_tmp
+	jsr	_advtrack
+
+	`bcolor	5
+	lda	#[1*2]
+	sta	_v_tmp
+	jsr	_advtrack
+
+	`bcolor	6
+	lda	#[2*2]
+	sta	_v_tmp
+	jsr	_advtrack
+
+	`bcolor	0
+	rts
+
+
+.scend
