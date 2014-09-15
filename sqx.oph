@@ -103,9 +103,7 @@ sqx_init: ; A = song number
 
 _advtrack: ; _v_tmp: track 0-3 * 2
 .scope
-	; X = _v_tmp
-	lda	_v_tmp
-	tax
+	ldx	_v_tmp
 
 _advtrack_have_x:
 	; if twait != 0 then _decrement_twait
