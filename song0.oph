@@ -121,7 +121,7 @@ voi: .byte 0,7,14
 inst:	.byte $20,$50,$10
 
 play:
-	jsr	inc_pattern
+	jsr	sqx_next_pattern
 
 	txa
 	lsr
@@ -169,7 +169,7 @@ stop:
 	rts
 
 wait16ths: ; xxx no overflow handling
-	jsr	inc_pattern
+	jsr	sqx_next_pattern
 	lda	(zp_pptr,x)
 
 	asl

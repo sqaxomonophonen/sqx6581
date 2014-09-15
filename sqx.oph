@@ -19,7 +19,7 @@ _v_song:      .byte 0
 .include "freq.oph"
 
 
-inc_pattern: ; X: track 0-3 * 2 (preserves X)
+sqx_next_pattern: ; X: track 0-3 * 2 (preserves X)
 	lda	zp_pptr,x
 	clc
 	adc	#1
@@ -152,7 +152,7 @@ _MOD_jsr:
 	; increment pattern ptr
 	lda	_v_tmp
 	tax
-	jsr	inc_pattern
+	jsr	sqx_next_pattern
 
 	jmp	_advtrack_have_x
 
