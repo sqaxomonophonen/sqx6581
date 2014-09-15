@@ -117,7 +117,6 @@ sqx_commands_hi:
 
 
 tmp: .byte 0
-voi: .byte 0,7,14
 inst:	.byte $20,$50,$10
 
 play:
@@ -128,7 +127,7 @@ play:
 	sta	tmp
 	tay
 	lda	(zp_pptr,x)
-	ldx	voi,y
+	ldx	sqx_voice,y
 	tay
 
 	lda	#$51
@@ -163,7 +162,7 @@ stop:
 	txa
 	lsr
 	tay
-	ldx	voi,y
+	ldx	sqx_voice,y
 	lda	#%00100000
 	sta	$d404,x
 	rts

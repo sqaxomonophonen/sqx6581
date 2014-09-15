@@ -15,7 +15,7 @@ _v_tmp:       .word 0
 _v_song:      .byte 0
 
 ; "constants"
-;_C_voffset:   .byte 0,7,14,255
+sqx_voice:    .byte 0,7,14
 .include "freq.oph"
 
 
