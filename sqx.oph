@@ -193,4 +193,34 @@ sqx_tick:
 	rts
 
 
+sqx_a16:
+	.word	0
+
+
+.macro	sqx_aload
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+.macend
+
+.macro	sqx_w6
+	`sqx_aload
+	asl
+	sta	sqx_twait,x
+	sta	sqx_a16
+	rol	sqx_twait+1,x
+	lda	sqx_twait+1,x
+	sta	sqx_a16+1
+	asl	sqx_twait,x
+	rol	sqx_twait+1,x
+
+	lda	sqx_twait,x
+	clc
+	adc	sqx_a16
+	sta	sqx_twait,x
+	lda	sqx_twait+1,x
+	adc	sqx_a16+1
+	sta	sqx_twait+1,x
+.macend
+
+
 .scend

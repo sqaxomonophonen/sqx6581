@@ -106,7 +106,7 @@ seq7:
 .byte $ff
 
 silence:
-.byte 0,16
+.byte 0,128
 .byte $ff
 
 
@@ -168,16 +168,9 @@ stop:
 	sta	$d404,x
 	rts
 
-wait16ths: ; xxx no overflow handling
-	jsr	sqx_next_pattern
-	lda	(zp_pptr,x)
-
-	asl
-	sta	tmp
-	asl
-	clc
-	adc	tmp
-	sta	sqx_twait,x
+wait16ths:
+	`sqx_w6
 	rts
+
 
 
