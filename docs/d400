@@ -1,0 +1,98 @@
+
+offset = voice * 7
+
+d400-d401        frequency
+
+d402-d403        pulse width
+
+d404             ctrl   NKWTXRSV
+                               V #$01 voice on (attack/decay/sustain cycle), otherwise off (release cycle)
+                              S  #$02 sync enable
+                             R   #$04 ringmod enable
+                            X    #$08 disable voice / reset noise generator
+
+                           T     #$10 triangle waveform
+                          W      #$20 saw waveform
+                         K       #$40 rectangle waveform
+                        N        #$80 noise waveform
+
+d405            AD (attack/decay)
+
+                (attack)
+                0x        2ms
+                1x        8ms
+                2x        16ms
+                3x        24ms
+                4x        38ms
+                5x        56ms
+                6x        68ms
+                7x        80ms
+                8x        100ms
+                9x        250ms
+                Ax        500ms
+                Bx        800ms
+                Cx        1000ms
+                Dx        3000ms
+                Ex        5000ms
+                Fx        8000ms
+
+                (decay)
+                x0        6ms
+                x1        24ms
+                x2        48ms
+                x3        72ms
+                x4        114ms
+                x5        168ms
+                x6        204ms
+                x7        240ms
+                x8        300ms
+                x9        750ms
+                xA        1500ms
+                xB        2400ms
+                xC        3000ms
+                xD        9000ms
+                xE        15000ms
+                xF        24000ms
+
+d406            SR (sustain/release)
+
+                Sx        sustain volume, 0-15
+
+                (release)
+                x0        6ms
+                x1        24ms
+                x2        48ms
+                x3        72ms
+                x4        114ms
+                x5        168ms
+                x6        204ms
+                x7        240ms
+                x8        300ms
+                x9        750ms
+                xA        1500ms
+                xB        2400ms
+                xC        3000ms
+                xD        9000ms
+                xE        15000ms
+                xF        24000ms
+
+d407            voice #2
+d40e            voice #3
+
+d415            filter cutoff (high 3 bits)
+d416            filter cutoff (low 8 bits)
+
+d417            filter control        RRRRx321
+                                             1 voice #1 filtered
+                                            2  voice #2 filtered
+                                           3   voice #3 filtered
+                                          x    external voice filtered
+                                      RRRR     resonance 0-15
+
+d418            vol/filt              DHBLVVVV
+                                          VVVV global volume 0-15
+                                         L     lowpass enable
+                                        B      bandpass enable
+                                       H       highpass enable
+                                      D        voice #3 off
+
