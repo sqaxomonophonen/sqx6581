@@ -4,6 +4,7 @@
 
 ; public state
 sqx_twait:    .word 0,0,0,0
+sqx_tickfn:   .word sqx_tnone,sqx_tnone,sqx_tnone,sqx_tnone
 
 ; hawking $e0-$ef for track/pattern pointers. nom nom.
 ; (normal life for $e0-$ef is screen memory ptrs.. used only by BASIC I guess)
@@ -18,6 +19,10 @@ _v_song:      .byte 0
 sqx_voice:    .byte 0,7,14
 .include "freq.oph"
 
+
+
+sqx_tnone:
+	rts
 
 sqx_next_pattern: ; X: track 0-3 * 2 (preserves X)
 	lda	zp_pptr,x
@@ -106,11 +111,11 @@ _advtrack: ; _v_tmp: track 0-3 * 2
 	ldx	_v_tmp
 
 _advtrack_have_x:
-	; if twait != 0 then _decrement_twait
+	; if twait != 0 then _tick_end
 	lda	sqx_twait+1,x
-	bne	_decrement_twait
+	bne	_tick_end
 	lda	sqx_twait,x
-	bne	_decrement_twait
+	bne	_tick_end
 
 	; read next command
 	lda	(zp_pptr,x)
@@ -156,14 +161,25 @@ _MOD_jsr:
 
 	jmp	_advtrack_have_x
 
-_decrement_twait:
+_tick_end:
+	; call tick function
+	lda	sqx_tickfn,x
+	sta	_MOD_jsr2+1
+	lda	sqx_tickfn+1,x
+	sta	_MOD_jsr2+2
+_MOD_jsr2:
+	jsr	$0000
+
+	; decrement tick wait counter
+	ldx	_v_tmp
 	lda	sqx_twait,x
 	sec
 	sbc	#1
 	sta	sqx_twait,x
 	bcs	+
 	dec	sqx_twait+1,x
-*	rts
+*
+	rts
 .scend
 
 

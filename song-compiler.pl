@@ -9,12 +9,8 @@ sub oph ($) {
 	open F, "<", $path or die("$path: $!");
 	while (<F>) {
 		if (/^\s*(\w+):;\(([^)]*)\)/) {
-			my $cmd = $1;
-			$prototypes{$cmd} = $2;
-			my $n = length $2;
-			print "; SQX command '$cmd', $n argument(s)\n";
+			$prototypes{$1} = $2;
 		}
-		print $_;
 	}
 	close F;
 }
@@ -118,6 +114,7 @@ my $got_sqx = 0;
 
 foreach (@ARGV) {
 	if (/\.oph$/) {
+		die ".oph after .sqx not allowed" if $got_sqx;
 		oph $_;
 	} elsif (/\.sqx$/) {
 		die "only one .sqx allowed" if $got_sqx;

@@ -1,0 +1,105 @@
+
+
+_arpn: .byte 0,0,0
+_base: .byte 0
+_time: .byte 0
+_tmp:  .byte 0
+
+arptick:
+	ldy	_time
+	lda	_arpn,y
+	clc
+	adc	_base
+	tay
+
+	lda	freqlo,y
+	sta	$d400,x
+	lda	freqhi,y
+	sta	$d401,x
+
+	ldy	_time
+	iny
+	cpy	#3
+	bmi	+
+	ldy	#0
+*
+	sty	_time
+
+	rts
+
+zbase:;($)
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+	sta	_base
+	rts
+
+arp:;($$$)
+	lda	#%00100000
+	sta	$d404
+
+	ldy	_base
+	lda	freqlo,y
+	sta	$d400
+	lda	freqhi,y
+	sta	$d401
+
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+	sta	_arpn+0
+
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+	sta	_arpn+1
+
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+	sta	_arpn+2
+
+	; attack, decay
+	lda	#$0b
+	sta	$d405
+
+	; sustain, release
+	lda	#$60
+	sta	$d406
+
+	lda	#%00100001
+	sta	$d404
+
+
+	lda	#<arptick
+	sta	sqx_tickfn,x
+	lda	#>arptick
+	sta	sqx_tickfn+1,x
+
+	rts
+
+w16:;($)
+	`sqx_w6
+	rts
+
+bazz:;($)
+	lda	#%00100000
+	sta	$d404+7
+
+	jsr	sqx_next_pattern
+	lda	(zp_pptr,x)
+	tay
+	lda	freqlo,y
+	sta	$d400+7
+	lda	freqhi,y
+	sta	$d401+7
+
+	; attack, decay
+	lda	#$09
+	sta	$d405+7
+
+	; sustain, release
+	lda	#$80
+	sta	$d406+7
+
+	lda	#%00100001
+	sta	$d404+7
+
+	rts
+

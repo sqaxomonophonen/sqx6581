@@ -1,0 +1,44 @@
+
+*: t0 t1 t2 taux
+
+
+t0: arp3 arp2 arp5 arp3 majarp5 majarp4 majarp5 majarp4
+t1: b0 b0 b0 b0 b1 b1 b1 b1
+t2: wait64
+taux: wait64
+
+
+arp5: zbase(54) arp(0,5,7) w16(4) arp(12,5,7) w16(4) arp(0,5,7) w16(4) arp(12,5,19) w16(4)
+arp3: zbase(54) arp(0,3,7) w16(4) arp(12,3,7) w16(4) arp(0,3,7) w16(4) arp(12,3,19) w16(4)
+arp2: zbase(54) arp(0,2,7) w16(4) arp(12,2,7) w16(4) arp(0,2,7) w16(4) arp(12,2,19) w16(4)
+
+majarp4:
+zbase(54)
+arp($fe,3,7) w16(2)
+arp($fe,3,7) w16(4)
+arp($fe,3,7) w16(4)
+arp($fe,3,7) w16(4)
+arp($fe,3,7) w16(2)
+
+majarp5:
+zbase(54)
+arp($fe,3,8) w16(2)
+arp($fe,3,8) w16(4)
+arp($fe,3,8) w16(4)
+arp($fe,3,8) w16(4)
+arp($fe,3,8) w16(2)
+
+
+b0:
+bazz(30) w16(2) bazz(42) w16(2)
+bazz(30) w16(2) bazz(42) w16(2)
+bazz(30) w16(2) bazz(42) w16(2)
+bazz(30) w16(2) bazz(42) w16(2)
+
+b1:
+bazz(33) w16(2) bazz(45) w16(1) bazz(45) w16(1)
+bazz(33) w16(2) bazz(45) w16(1) bazz(45) w16(1)
+bazz(33) w16(2) bazz(45) w16(1) bazz(45) w16(1)
+bazz(33) w16(2) bazz(45) w16(1) bazz(45) w16(1)
+
+wait64: w16(64)
