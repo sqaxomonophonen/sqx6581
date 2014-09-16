@@ -30,7 +30,7 @@ sub sqx ($) {
 		while ($line) {
 			$line =~ s/^\s+//g;
 			last if substr($line,0,1) eq ";";
-			$line =~ /^([a-zA-Z0-9_*$()]*:?)(.*)$/;
+			$line =~ /^([a-zA-Z0-9_*$(,)]*:?)(.*)$/;
 			last if (not $1) and (not $2);
 			die("?SYNTAX ERROR in: $line") if (not $1) and $2;
 			my $token = $1;
@@ -81,7 +81,7 @@ sub sqx ($) {
 	foreach my $ptn (@ptns) {
 		print "$ptn: .byte ";
 		foreach my $call (@{$lists{$ptn}}) {
-			$call =~ /^(\w+)\((.+)\)$/ or die("invalid call '$call'");
+			$call =~ /^(\w+)\((.*)\)$/ or die("invalid call '$call'");
 			my $cmd = $1;
 			my @args = split /,/, $2;
 
@@ -96,10 +96,12 @@ sub sqx ($) {
 			$bytes++;
 			foreach my $proto (split //, $prototypes{$cmd}) {
 				die "unknown proto $proto" if $proto ne '$';
+				die "too few args for $cmd" if not @args;
 				my $arg = shift @args;
 				print "$arg,";
 				$bytes++;
 			}
+			die "too many args for $cmd" if @args;
 		}
 		print "\$ff\n";
 		$bytes++;
