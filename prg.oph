@@ -136,6 +136,8 @@ irq:
 	lda	#$3c
 	sta	$d012
 
+	lda	#4
+	sta	$d020
 	jsr	write_info
 	jsr	sqx_tick
 
