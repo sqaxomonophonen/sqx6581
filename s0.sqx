@@ -1,0 +1,86 @@
+
+*:
+  t0    t1    t2 tnone	; song 0
+  tnone t1    t2 tnone	; song 1
+  tnone tnone t2 tnone	; song 2
+
+
+t0:   seq0 seq0 seq1 seq1 seq1 seq1 seq0 seq0
+
+
+t1:
+seq2 seq2 seq2 seq2 seq2 seq2 seq2 seq2
+seq3 seq3 seq3 seq3 seq3 seq3 seq3 seq3
+seq4 seq4 seq4 seq4 seq4 seq4 seq4 seq4
+seq5 seq5 seq5 seq5 seq5 seq5 seq5 seq5
+
+t2:
+seq6 seq6 seq6 seq6
+seq7 seq7 seq7 seq7
+seq7 seq7 seq7 seq7
+seq6 seq6 seq6 seq6
+
+tnone: silence
+
+silence: w16(128)
+
+seq0:
+ply(52) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(40) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(40) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(40) w16(2)
+ply(43) w16(2)
+
+seq1:
+ply(50) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(38) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(38) w16(2)
+ply(47) w16(1) ply(47) w16(1)
+ply(38) w16(2)
+ply(42) w16(2)
+
+seq2:
+ply(16) w16(2)
+ply(28) w16(2)
+
+seq3:
+ply(19) w16(2)
+ply(31) w16(2)
+
+seq4:
+ply(26) w16(2)
+ply(38) w16(2)
+
+seq5:
+ply(24) w16(2)
+ply(36) w16(2)
+
+seq6:
+ply(67) w16(1)
+ply(59) w16(1)
+ply(64) w16(1)
+ply(59) w16(1)
+
+ply(66) w16(1)
+ply(59) w16(1)
+ply(64) w16(1)
+ply(59) w16(1)
+
+seq7:
+ply(67) w16(1)
+ply(59) w16(1)
+ply(62) w16(1)
+ply(59) w16(1)
+
+ply(64) w16(1)
+ply(59) w16(1)
+ply(62) w16(1)
+ply(59) w16(1)
+
+;nice!
+

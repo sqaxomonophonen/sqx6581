@@ -1,0 +1,45 @@
+tmp: .byte 0
+inst:	.byte $20,$50,$10
+
+ply:;($)
+	jsr	sqx_next_pattern
+
+	txa
+	lsr
+	sta	tmp
+	tay
+	lda	(zp_pptr,x)
+	ldx	sqx_voice,y
+	tay
+
+	lda	#$51
+	sta	$d402,x
+
+	lda	#%00100000
+	sta	$d404,x
+
+	lda	freqlo,y
+	sta	$d400,x
+	lda	freqhi,y
+	sta	$d401,x
+
+	; attack, decay
+	lda	#$09
+	sta	$d405,x
+
+	; sustain, release
+	lda	#$19
+	sta	$d406,x
+
+	; noteon
+	ldy	tmp
+	lda	inst,y
+	ora	#1
+	;lda	#%00100001
+	sta	$d404,x
+
+	rts
+
+w16:;($)
+	`sqx_w6
+	rts
